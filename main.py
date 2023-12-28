@@ -160,6 +160,7 @@ else:
             "url": info.url,
             "last_error_date": info.last_error_date,
             "last_error_message": info.last_error_message,
+            "pending_update_count": info.pending_update_count,
         }
         return jsonify(result),200
 
