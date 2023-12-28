@@ -130,43 +130,45 @@ def callback_query(call):
                 markup.add(telebot.types.InlineKeyboardButton(text=s['title'], url="https://perompak7samudra.vercel.app"+s['detail']))
                 # linkMessage += "["+s['title']+"](https://perompak7samudra.vercel.app"+s['detail']+")\n\n"
             bot.send_message(call.message.chat.id,  linkMessage, reply_markup=markup,parse_mode="Markdown")
-        
 
-if ENV != "production":
-    bot.infinity_polling()
-else:
-    WEB_PORT = os.environ.get('WEB_PORT', '5000')
-    WEB_URL = os.environ.get('WEB_URL')
-    HOOK_URL = WEB_URL + '/' + BOT_TOKEN
-    # bot.start_webhook(listen='0.0.0.0', port=WEB_PORT, url_path=BOT_TOKEN, webhook_url=HOOK_URL)
-    # bot.idle()
+WEB_PORT = os.environ.get('WEB_PORT', '5000')
+WEB_URL = os.environ.get('WEB_URL')
+HOOK_URL = WEB_URL + '/' + BOT_TOKEN
+# bot.start_webhook(listen='0.0.0.0', port=WEB_PORT, url_path=BOT_TOKEN, webhook_url=HOOK_URL)
+# bot.idle()
 
-    @app.route('/' + BOT_TOKEN, methods=['POST'])
-    def getMessage():
-        json_string = request.get_data().decode('utf-8')
-        update = telebot.types.Update.de_json(json_string)
-        bot.process_new_updates([update])
-        # bot.process_new_updates([telebot.types.Update.de_json(request.stream.read().decode("utf-8"))])
-        return "!", 200
+@app.route('/' + BOT_TOKEN, methods=['POST'])
+def getMessage():
+    json_string = request.get_data().decode('utf-8')
+    update = telebot.types.Update.de_json(json_string)
+    bot.process_new_updates([update])
+    # bot.process_new_updates([telebot.types.Update.de_json(request.stream.read().decode("utf-8"))])
+    return "!", 200
 
-    @app.route("/")
-    def webhook():
+@app.route("/")
+def webhook():
+    bot.remove_webhook()
+    bot.set_webhook(url=HOOK_URL)
+    return "!", 200
+
+# check if webhook is working
+@app.route("/status")
+def status():
+    info = bot.get_webhook_info()
+    result = {
+        "url": info.url,
+        "last_error_date": info.last_error_date,
+        "last_error_message": info.last_error_message,
+        "pending_update_count": info.pending_update_count,
+    }
+    return jsonify(result),200   
+
+def main():
+    if ENV != "production":
         bot.remove_webhook()
-        bot.set_webhook(url=HOOK_URL)
-        return "!", 200
-    
-    # check if webhook is working
-    @app.route("/status")
-    def status():
-        info = bot.get_webhook_info()
-        result = {
-            "url": info.url,
-            "last_error_date": info.last_error_date,
-            "last_error_message": info.last_error_message,
-            "pending_update_count": info.pending_update_count,
-        }
-        return jsonify(result),200
-
-
-    if __name__ == "__main__":
+        bot.infinity_polling()
+    else:
         app.run(host="0.0.0.0", port=WEB_PORT)
+    
+if __name__ == "__main__":
+    main()
