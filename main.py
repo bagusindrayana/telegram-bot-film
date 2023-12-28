@@ -4,7 +4,7 @@ import json
 from dotenv import load_dotenv
 import telebot
 import mysql.connector
-from flask import Flask,request
+from flask import Flask,request,jsonify
 app = Flask(__name__)
 
 
@@ -156,7 +156,12 @@ else:
     @app.route("/status")
     def status():
         info = bot.get_webhook_info()
-        return info.url, 200
+        result = {
+            "url": info.url,
+            "last_error_date": info.last_error_date,
+            "last_error_message": info.last_error_message,
+        }
+        return jsonify(result),200
 
 
     if __name__ == "__main__":
