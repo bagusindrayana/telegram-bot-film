@@ -151,6 +151,11 @@ else:
         bot.remove_webhook()
         bot.set_webhook(url=HOOK_URL)
         return "!", 200
+    
+    # check if webhook is working
+    @app.route("/status")
+    def status():
+        return bot.get_webhook_info(), 200
 
 
     if __name__ == "__main__":
