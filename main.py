@@ -8,6 +8,7 @@ import mysql.connector
 
 load_dotenv()
 
+ENV = os.environ.get('ENV')
 BOT_TOKEN = os.environ.get('BOT_TOKEN')
 DB_HOST = os.environ.get('DB_HOST')
 DB_PORT = os.environ.get('DB_PORT')
@@ -75,9 +76,12 @@ def detailMovie(movieLink):
 def cleanLink(link):
     return link.replace("/api/get?link=","").replace("/&provider=PusatFilm","")
 
-@bot.message_handler(commands=['start', 'hello'])
+@bot.message_handler(commands=['start', 'hello','help'])
 def send_welcome(message):
-    bot.reply_to(message, "Howdy, how are you doing?")
+    bot.reply_to(message, """
+Selamat datang di bot PusatFilm
+Ketik /search <judul film> untuk mencari film
+""")
 
 @bot.message_handler(commands=['search'])
 def search(message):
@@ -126,4 +130,11 @@ def callback_query(call):
             bot.send_message(call.message.chat.id,  linkMessage, reply_markup=markup,parse_mode="Markdown")
         
 
-bot.infinity_polling()
+if ENV != "production":
+    bot.infinity_polling()
+else:
+    WEB_PORT = int(os.environ.get('WEB_PORT', '443'))
+    WEB_URL = os.environ.get('WEB_URL')
+    HOOK_URL = WEB_URL + '/' + BOT_TOKEN
+    bot.start_webhook(listen='0.0.0.0', port=WEB_PORT, url_path=BOT_TOKEN, webhook_url=HOOK_URL)
+    bot.idle()
