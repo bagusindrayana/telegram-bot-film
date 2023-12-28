@@ -4,6 +4,8 @@ import json
 from dotenv import load_dotenv
 import telebot
 import mysql.connector
+from flask import Flask,request
+server = Flask(__name__)
 
 
 load_dotenv()
@@ -133,8 +135,23 @@ def callback_query(call):
 if ENV != "production":
     bot.infinity_polling()
 else:
-    WEB_PORT = int(os.environ.get('WEB_PORT', '443'))
+    WEB_PORT = os.environ.get('WEB_PORT', '5000')
     WEB_URL = os.environ.get('WEB_URL')
     HOOK_URL = WEB_URL + '/' + BOT_TOKEN
-    bot.start_webhook(listen='0.0.0.0', port=WEB_PORT, url_path=BOT_TOKEN, webhook_url=HOOK_URL)
-    bot.idle()
+    # bot.start_webhook(listen='0.0.0.0', port=WEB_PORT, url_path=BOT_TOKEN, webhook_url=HOOK_URL)
+    # bot.idle()
+
+    @server.route('/' + BOT_TOKEN, methods=['POST'])
+    def getMessage():
+        bot.process_new_updates([telebot.types.Update.de_json(request.stream.read().decode("utf-8"))])
+        return "!", 200
+
+    @server.route("/")
+    def webhook():
+        bot.remove_webhook()
+        bot.set_webhook(url=HOOK_URL)
+        return "!", 200
+
+
+    if __name__ == "__main__":
+        server.run(host="0.0.0.0", port=WEB_PORT)
