@@ -156,7 +156,7 @@ else:
     @app.route("/status")
     def status():
         info = bot.get_webhook_info()
-        return info['url'], 200
+        return info.url, 200
 
 
     if __name__ == "__main__":
