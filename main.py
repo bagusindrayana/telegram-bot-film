@@ -9,7 +9,54 @@ import mysql.connector
 load_dotenv()
 
 BOT_TOKEN = os.environ.get('BOT_TOKEN')
+DB_HOST = os.environ.get('DB_HOST')
+DB_PORT = os.environ.get('DB_PORT')
+DB_USER = os.environ.get('DB_USER')
+DB_PASS = os.environ.get('DB_PASS')
+DB_NAME = os.environ.get('DB_NAME')
 
+mydb = mysql.connector.connect(
+    host=DB_HOST,
+    port=DB_PORT,
+    user=DB_USER,
+    password=DB_PASS,
+    database=DB_NAME
+)
+
+if mydb.is_connected():
+    print("Berhasil terhubung ke database")
+
+def getHistoryById(id):
+    mycursor = mydb.cursor()
+    sql = "SELECT * FROM history_film WHERE id = %s"
+    val = (id,)
+    mycursor.execute(sql, val)
+    myresult = mycursor.fetchone()
+    return myresult
+
+def getHistoryByLink(link):
+    mycursor = mydb.cursor()
+    sql = "SELECT * FROM history_film WHERE link = %s"
+    val = (link,)
+    mycursor.execute(sql, val)
+    myresult = mycursor.fetchone()
+    return myresult
+
+def insertHistory(link,message_id):
+    cek = getHistoryByLink(link)
+    if cek is None:
+        mycursor = mydb.cursor()
+        sql = "INSERT INTO history_film (link, message_id) VALUES (%s, %s)"
+        val = (link,message_id)
+        mycursor.execute(sql, val)
+        mydb.commit()
+        return mycursor.lastrowid
+    else:
+        return cek[0]
+
+# data = getHistoryByLink("https://pusatfilm21.vip/tv/one-piece-2")
+# print(data[1])
+# exit()
 bot = telebot.TeleBot(BOT_TOKEN)
 api_url = "https://perompak7samudra.vercel.app/api"
 
@@ -21,7 +68,6 @@ def searchMovie(movieName):
 
 def detailMovie(movieLink):
     url = api_url + "/get?link=" + movieLink + "/&provider=PusatFilm"
-    print(url)
     response = requests.get(url)
     data = response.json()
     return data
@@ -42,36 +88,42 @@ def search(message):
     # send message photo and title
     # when user click the message, call detailMovie function
     for i in data5:
-        # sample_string_bytes = i['link'].replace("/api/get?link=","").replace("/&provider=PusatFilm","").encode("ascii") 
-  
-        # base64_bytes = base64.b64encode(sample_string_bytes) 
-        # base64_string = base64_bytes.decode("ascii") 
+        link = cleanLink(i['link'])
+        id = insertHistory(link,message.id)
         markup = telebot.types.InlineKeyboardMarkup()
-        markup.add(telebot.types.InlineKeyboardButton(text="Link Stream 🎥", callback_data="/detail",kwargs={"test":"test"}))
-        bot.send_photo(message.chat.id, i['thumb'], caption="<a href='"+i['link']+"'>"+i['title']+"</a>",  reply_markup=markup,parse_mode="HTML")
+        markup.add(telebot.types.InlineKeyboardButton(text="Link Stream 🎥", callback_data="/detail "+str(id)))
+        bot.send_photo(message.chat.id, i['thumb'], caption=i['title'],  reply_markup=markup,parse_mode="Markdown")
 
 @bot.callback_query_handler(func=lambda call: True)
 def callback_query(call):
     
     if call.data.startswith("/detail"):
         # print(call.text)
-        print(call.message)
+        id = call.data.replace("/detail ","")
+        print("ID : "+str(id))
+        history = getHistoryById(id)
+        print(history)
+        link = history[1]
+        
         # message_text = call.message.caption
         # link = message_text.split("\n")[1]
         # link = call.text.replace("https://perompak7samudra.vercel.app/api/get?link=","").replace("/&provider=PusatFilm","")
-        # data = detailMovie(link)
+        data = detailMovie(link)
         
-        # if "episode" in data:
-        #     markup = telebot.types.InlineKeyboardMarkup()
-        #     for e in data['episode']:
-        #         print("/detail "+e['link'])
-        #         markup.add(telebot.types.InlineKeyboardButton(text=e['title'], callback_data="/detail",url="https://perompak7samudra.vercel.app"+e['link']))
-        #     bot.send_message(call.message.chat.id, data['title'] + "Episode : ", reply_markup=markup,parse_mode="Markdown")
-        # else:
-        #     linkMessage = "Link Streaming : \n"
-        #     for s in data['stream']:
-        #         linkMessage += "["+s['title']+"](https://perompak7samudra.vercel.app"+s['detail']+")\n\n"
-        #     bot.send_message(call.message.chat.id,  linkMessage, parse_mode="Markdown")
+        if "episode" in data:
+            markup = telebot.types.InlineKeyboardMarkup()
+            for e in data['episode']:
+                link = cleanLink(e['link'])
+                id = insertHistory(link,call.message.id)
+                markup.add(telebot.types.InlineKeyboardButton(text="Eps "+e['title'], callback_data="/detail "+str(id)))
+            bot.send_message(call.message.chat.id, data['title'] + "Episode : ", reply_markup=markup,parse_mode="Markdown")
+        else:
+            linkMessage = "Link Streaming "+data['title']+" : \n"
+            markup = telebot.types.InlineKeyboardMarkup()
+            for s in data['stream']:
+                markup.add(telebot.types.InlineKeyboardButton(text=s['title'], url="https://perompak7samudra.vercel.app"+s['detail']))
+                # linkMessage += "["+s['title']+"](https://perompak7samudra.vercel.app"+s['detail']+")\n\n"
+            bot.send_message(call.message.chat.id,  linkMessage, reply_markup=markup,parse_mode="Markdown")
         
 
 bot.infinity_polling()
