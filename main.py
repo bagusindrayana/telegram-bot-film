@@ -155,7 +155,8 @@ else:
     # check if webhook is working
     @app.route("/status")
     def status():
-        return bot.get_webhook_info(), 200
+        info = bot.get_webhook_info()
+        return info['url'], 200
 
 
     if __name__ == "__main__":
