@@ -28,6 +28,8 @@ mydb = mysql.connector.connect(
 
 if mydb.is_connected():
     print("Berhasil terhubung ke database")
+else:
+    print("Gagal terhubung ke database")
 
 def getHistoryById(id):
     mycursor = mydb.cursor()
@@ -87,6 +89,7 @@ Ketik /search <judul film> untuk mencari film
 
 @bot.message_handler(commands=['search'])
 def search(message):
+    print(message.text)
     movieName = message.text.replace("/search ", "")
     data = searchMovie(movieName)
     data5 = data[:5]
@@ -102,7 +105,7 @@ def search(message):
 
 @bot.callback_query_handler(func=lambda call: True)
 def callback_query(call):
-    
+    print(call.data)
     if call.data.startswith("/detail"):
         # print(call.text)
         id = call.data.replace("/detail ","")
@@ -141,6 +144,7 @@ HOOK_URL = WEB_URL + '/' + BOT_TOKEN
 def getMessage():
     json_string = request.get_data().decode('utf-8')
     update = telebot.types.Update.de_json(json_string)
+    print(json_string)
     bot.process_new_updates([update])
     # bot.process_new_updates([telebot.types.Update.de_json(request.stream.read().decode("utf-8"))])
     return "!", 200
