@@ -66,8 +66,10 @@ bot = telebot.TeleBot(BOT_TOKEN)
 api_url = "https://perompak7samudra.vercel.app/api"
 
 def searchMovie(movieName):
+    print("Start search movie ",movieName)
     url = api_url+"/search?query=" + movieName + "&providers[]=PusatFilm"
     response = requests.get(url)
+    print(response.status_code)
     data = response.json()
     return data
 
