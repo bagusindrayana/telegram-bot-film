@@ -82,12 +82,7 @@ def detailMovie(movieLink):
 def cleanLink(link):
     return link.replace("/api/get?link=","").replace("/&provider=PusatFilm","")
 
-@bot.message_handler(commands=['start', 'hello','help'])
-def send_welcome(message):
-    bot.reply_to(message, """
-Selamat datang di bot PusatFilm
-Ketik /search <judul film> untuk mencari film
-""")
+
 
 @bot.message_handler(commands=['search'])
 def search(message):
@@ -95,6 +90,7 @@ def search(message):
     movieName = message.text.replace("/search ", "")
     data = searchMovie(movieName)
     data5 = data[:5]
+    print(data5)
 
     # send message photo and title
     # when user click the message, call detailMovie function
@@ -104,6 +100,13 @@ def search(message):
         markup = telebot.types.InlineKeyboardMarkup()
         markup.add(telebot.types.InlineKeyboardButton(text="Link Stream 🎥", callback_data="/detail "+str(id)))
         bot.send_photo(message.chat.id, i['thumb'], caption=i['title'],  reply_markup=markup,parse_mode="Markdown")
+
+@bot.message_handler(commands=['start', 'hello','help'])
+def send_welcome(message):
+    bot.reply_to(message, """
+Selamat datang di bot PusatFilm
+Ketik /search <judul film> untuk mencari film
+""")
 
 @bot.callback_query_handler(func=lambda call: True)
 def callback_query(call):
