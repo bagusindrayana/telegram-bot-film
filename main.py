@@ -62,7 +62,7 @@ def insertHistory(link,message_id):
 # data = getHistoryByLink("https://pusatfilm21.vip/tv/one-piece-2")
 # print(data[1])
 # exit()
-bot = telebot.TeleBot(BOT_TOKEN)
+bot = telebot.TeleBot(BOT_TOKEN, threaded=False)
 api_url = "https://perompak7samudra.vercel.app/api"
 
 def searchMovie(movieName):
