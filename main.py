@@ -69,10 +69,12 @@ def searchMovie(movieName):
     print("Start search movie ",movieName)
     url = api_url+"/search?query=" + movieName + "&providers[]=PusatFilm"
     response = requests.get(url)
-    print(response.status_code)
-    data = response.json()
-    return data
-
+    if response.status_code != 200:
+        print("Error : "+response.text)
+        return []
+    else:
+        data = response.json()
+        return data
 def detailMovie(movieLink):
     url = api_url + "/get?link=" + movieLink + "/&provider=PusatFilm"
     response = requests.get(url)
