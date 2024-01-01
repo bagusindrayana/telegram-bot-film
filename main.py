@@ -63,7 +63,7 @@ def insertHistory(link,message_id):
 # print(data[1])
 # exit()
 bot = telebot.TeleBot(BOT_TOKEN, threaded=False)
-api_url = "https://perompak7samudra.vercel.app/api"
+api_url = "https://perompak7samudra-52cvvzmy5q-de.a.run.app/api"
 
 def searchMovie(movieName):
     print("Start search movie ",movieName)
@@ -123,7 +123,7 @@ def callback_query(call):
         
         # message_text = call.message.caption
         # link = message_text.split("\n")[1]
-        # link = call.text.replace("https://perompak7samudra.vercel.app/api/get?link=","").replace("/&provider=PusatFilm","")
+        # link = call.text.replace("https://perompak7samudra-52cvvzmy5q-de.a.run.app/api/get?link=","").replace("/&provider=PusatFilm","")
         data = detailMovie(link)
         
         if "episode" in data:
@@ -137,8 +137,8 @@ def callback_query(call):
             linkMessage = "Link Streaming "+data['title']+" : \n"
             markup = telebot.types.InlineKeyboardMarkup()
             for s in data['stream']:
-                markup.add(telebot.types.InlineKeyboardButton(text=s['title'], url="https://perompak7samudra.vercel.app"+s['detail']))
-                # linkMessage += "["+s['title']+"](https://perompak7samudra.vercel.app"+s['detail']+")\n\n"
+                markup.add(telebot.types.InlineKeyboardButton(text=s['title'], url="https://perompak7samudra-52cvvzmy5q-de.a.run.app"+s['detail']))
+                # linkMessage += "["+s['title']+"](https://perompak7samudra-52cvvzmy5q-de.a.run.app"+s['detail']+")\n\n"
             bot.send_message(call.message.chat.id,  linkMessage, reply_markup=markup,parse_mode="Markdown")
 
 WEB_PORT = os.environ.get('WEB_PORT', '5000')
