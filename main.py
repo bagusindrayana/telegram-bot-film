@@ -19,14 +19,14 @@ DB_PASS = os.environ.get('DB_PASS')
 DB_NAME = os.environ.get('DB_NAME')
 
 def initDb():
-    mydb = psycopg2.connect(
+    db = psycopg2.connect(
         host=DB_HOST,
         port=DB_PORT,
         user=DB_USER,
         password=DB_PASS,
         database=DB_NAME
     )
-    return mydb
+    return db
 mydb = initDb()
 try:
     cur = mydb.cursor()
@@ -38,6 +38,7 @@ except psycopg2.OperationalError:
     pass
 
 def getHistoryById(id):
+    global mydb
     try:
         mycursor = mydb.cursor()
     except psycopg2.InterfaceError as err:
@@ -52,6 +53,7 @@ def getHistoryById(id):
     return myresult
 
 def getHistoryByLink(link):
+    global mydb
     try:
         mycursor = mydb.cursor()
     except psycopg2.InterfaceError as err:
@@ -65,6 +67,7 @@ def getHistoryByLink(link):
     return myresult
 
 def insertHistory(link,message_id):
+    global mydb
     cek = getHistoryByLink(link)
     if cek is None:
         try:
