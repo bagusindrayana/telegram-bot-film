@@ -117,14 +117,13 @@ Ketik /search <judul film> untuk mencari film
 
 @bot.callback_query_handler(func=lambda call: True)
 def callback_query(call):
-    print(call.data)
     if call.data.startswith("/detail"):
         # print(call.text)
         id = call.data.replace("/detail ","")
         print("ID : "+str(id))
         history = getHistoryById(id)
         print(history)
-        link = history[1]
+        link = history[2]
         
         # message_text = call.message.caption
         # link = message_text.split("\n")[1]
