@@ -31,6 +31,7 @@ print(mydb.closed)
 try:
     cur = mydb.cursor()
     cur.execute('SELECT 1')
+    mydb.commit()
     print("Berhasil terhubung ke database")
 except psycopg2.OperationalError:
     print("Gagal terhubung ke database")
@@ -41,6 +42,7 @@ def getHistoryById(id):
     sql = "SELECT * FROM history_film WHERE id = %s"
     val = (id,)
     mycursor.execute(sql, val)
+    mydb.commit()
     myresult = mycursor.fetchone()
     return myresult
 
@@ -49,6 +51,7 @@ def getHistoryByLink(link):
     sql = "SELECT * FROM history_film WHERE link = %s"
     val = (link,)
     mycursor.execute(sql, val)
+    mydb.commit()
     myresult = mycursor.fetchone()
     return myresult
 
