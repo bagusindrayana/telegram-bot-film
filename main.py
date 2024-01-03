@@ -18,52 +18,65 @@ DB_USER = os.environ.get('DB_USER')
 DB_PASS = os.environ.get('DB_PASS')
 DB_NAME = os.environ.get('DB_NAME')
 
-mydb = psycopg2.connect(
-    host=DB_HOST,
-    port=DB_PORT,
-    user=DB_USER,
-    password=DB_PASS,
-    database=DB_NAME
-)
-
-print(mydb.closed)
-
+def initDb():
+    mydb = psycopg2.connect(
+        host=DB_HOST,
+        port=DB_PORT,
+        user=DB_USER,
+        password=DB_PASS,
+        database=DB_NAME
+    )
+    return mydb
+mydb = initDb()
 try:
     cur = mydb.cursor()
     cur.execute('SELECT 1')
-    mydb.commit()
+    
     print("Berhasil terhubung ke database")
 except psycopg2.OperationalError:
     print("Gagal terhubung ke database")
     pass
 
 def getHistoryById(id):
-    mycursor = mydb.cursor()
+    try:
+        mycursor = mydb.cursor()
+    except psycopg2.InterfaceError as err:
+        print(err.message)
+        mydb = initDb()
+        mycursor = mydb.cursor()
     sql = "SELECT * FROM history_film WHERE id = %s"
     val = (id,)
     mycursor.execute(sql, val)
-    mydb.commit()
+    
     myresult = mycursor.fetchone()
     return myresult
 
 def getHistoryByLink(link):
-    mycursor = mydb.cursor()
+    try:
+        mycursor = mydb.cursor()
+    except psycopg2.InterfaceError as err:
+        print(err.message)
+        mydb = initDb()
+        mycursor = mydb.cursor()
     sql = "SELECT * FROM history_film WHERE link = %s"
     val = (link,)
     mycursor.execute(sql, val)
-    mydb.commit()
     myresult = mycursor.fetchone()
     return myresult
 
 def insertHistory(link,message_id):
     cek = getHistoryByLink(link)
     if cek is None:
-        mycursor = mydb.cursor()
+        try:
+            mycursor = mydb.cursor()
+        except psycopg2.InterfaceError as err:
+            print(err.message)
+            mydb = initDb()
+            mycursor = mydb.cursor()
         sql = "INSERT INTO history_film (link, message_id) VALUES (%s, %s) RETURNING id;"
         val = (link,message_id)
         mycursor.execute(sql, val)
         data = mycursor.fetchone()
-        mydb.commit()
         id_of_new_row = data[0]
         return id_of_new_row
     else:
