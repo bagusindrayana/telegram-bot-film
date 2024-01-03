@@ -3,7 +3,7 @@ import requests
 import json
 from dotenv import load_dotenv
 import telebot
-import mysql.connector
+import psycopg2
 from flask import Flask,request,jsonify
 app = Flask(__name__)
 
@@ -18,7 +18,7 @@ DB_USER = os.environ.get('DB_USER')
 DB_PASS = os.environ.get('DB_PASS')
 DB_NAME = os.environ.get('DB_NAME')
 
-mydb = mysql.connector.connect(
+mydb = psycopg2.connect(
     host=DB_HOST,
     port=DB_PORT,
     user=DB_USER,
@@ -51,11 +51,13 @@ def insertHistory(link,message_id):
     cek = getHistoryByLink(link)
     if cek is None:
         mycursor = mydb.cursor()
-        sql = "INSERT INTO history_film (link, message_id) VALUES (%s, %s)"
+        sql = "INSERT INTO history_film (link, message_id) VALUES (%s, %s) RETURNING id;"
         val = (link,message_id)
         mycursor.execute(sql, val)
+        data = mycursor.fetchone()
         mydb.commit()
-        return mycursor.lastrowid
+        id_of_new_row = data[0]
+        return id_of_new_row
     else:
         return cek[0]
 
@@ -88,11 +90,9 @@ def cleanLink(link):
 
 @bot.message_handler(commands=['search'])
 def search(message):
-    print(message.text)
     movieName = message.text.replace("/search ", "")
     data = searchMovie(movieName)
     data5 = data[:5]
-    print(data5)
 
     # send message photo and title
     # when user click the message, call detailMovie function
@@ -172,7 +172,7 @@ def status():
         "last_error_message": info.last_error_message,
         "pending_update_count": info.pending_update_count,
     }
-    return jsonify(result),200   
+    return jsonify(result),200
 
 def main():
     if ENV != "production":
