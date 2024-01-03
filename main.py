@@ -84,6 +84,7 @@ def searchMovie(movieName):
         return data
 def detailMovie(movieLink):
     url = api_url + "/get?link=" + movieLink + "/&provider=PusatFilm"
+    print(url)
     response = requests.get(url)
     data = response.json()
     return data
@@ -122,8 +123,8 @@ def callback_query(call):
         id = call.data.replace("/detail ","")
         print("ID : "+str(id))
         history = getHistoryById(id)
-        print(history)
         link = history[2]
+        print("Link : "+link)
         
         # message_text = call.message.caption
         # link = message_text.split("\n")[1]
