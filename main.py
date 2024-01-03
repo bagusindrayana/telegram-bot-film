@@ -26,10 +26,15 @@ mydb = psycopg2.connect(
     database=DB_NAME
 )
 
-if mydb.is_connected():
+print(mydb.closed)
+
+try:
+    cur = mydb.cursor()
+    cur.execute('SELECT 1')
     print("Berhasil terhubung ke database")
-else:
+except psycopg2.OperationalError:
     print("Gagal terhubung ke database")
+    pass
 
 def getHistoryById(id):
     mycursor = mydb.cursor()
