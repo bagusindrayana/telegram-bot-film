@@ -49,8 +49,8 @@ def getHistoryById(id):
     sql = "SELECT * FROM history_film WHERE id = %s"
     val = (id,)
     mycursor.execute(sql, val)
-    
     myresult = mycursor.fetchone()
+    mydb.commit()
     return myresult
 
 def getHistoryByLink(link):
@@ -65,6 +65,7 @@ def getHistoryByLink(link):
     val = (link,)
     mycursor.execute(sql, val)
     myresult = mycursor.fetchone()
+    mydb.commit()
     return myresult
 
 def insertHistory(link,message_id):
@@ -81,6 +82,7 @@ def insertHistory(link,message_id):
         val = (link,message_id)
         mycursor.execute(sql, val)
         data = mycursor.fetchone()
+        mydb.commit()
         id_of_new_row = data[0]
         return id_of_new_row
     else:
