@@ -33,7 +33,8 @@ try:
     cur.execute('SELECT 1')
     
     print("Berhasil terhubung ke database")
-except psycopg2.OperationalError:
+except Exception as err:
+    print(err.message)
     print("Gagal terhubung ke database")
     pass
 
@@ -41,7 +42,7 @@ def getHistoryById(id):
     global mydb
     try:
         mycursor = mydb.cursor()
-    except psycopg2.InterfaceError as err:
+    except Exception as err:
         print(err.message)
         mydb = initDb()
         mycursor = mydb.cursor()
@@ -56,7 +57,7 @@ def getHistoryByLink(link):
     global mydb
     try:
         mycursor = mydb.cursor()
-    except psycopg2.InterfaceError as err:
+    except Exception as err:
         print(err.message)
         mydb = initDb()
         mycursor = mydb.cursor()
