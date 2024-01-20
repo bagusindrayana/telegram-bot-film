@@ -119,8 +119,16 @@ def cleanLink(link):
 @bot.message_handler(commands=['search'])
 def search(message):
     movieName = message.text.replace("/search ", "")
+    if movieName == "" or movieName == "/search":
+        bot.reply_to(message, "Silahkan ketik /search <judul film> untuk mencari film")
+        return
+    bot.reply_to(message, "Mencari film "+movieName+" silahkan tunggu...")
     data = searchMovie(movieName)
     data5 = data[:5]
+
+    if len(data5) == 0:
+        bot.reply_to(message, "Film "+movieName+" tidak ditemukan")
+        return
 
     # send message photo and title
     # when user click the message, call detailMovie function
