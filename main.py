@@ -151,10 +151,10 @@ def callback_query(call):
     if call.data.startswith("/detail"):
         # print(call.text)
         id = call.data.replace("/detail ","")
-        print("ID : "+str(id))
         history = getHistoryById(id)
         link = history[2]
         print("Link : "+link)
+        bot.send_message(call.message.chat.id, "Mencari link streaming film silahkan tunggu...")
         
         # message_text = call.message.caption
         # link = message_text.split("\n")[1]
