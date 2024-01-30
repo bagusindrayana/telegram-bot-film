@@ -150,31 +150,35 @@ Ketik /search <judul film> untuk mencari film
 def callback_query(call):
     if call.data.startswith("/detail"):
         # print(call.text)
-        id = call.data.replace("/detail ","")
-        history = getHistoryById(id)
-        link = history[2]
-        print("Link : "+link)
-        bot.send_message(call.message.chat.id, "Mencari link streaming film silahkan tunggu...")
-        
-        # message_text = call.message.caption
-        # link = message_text.split("\n")[1]
-        # link = call.text.replace("https://perompak7samudra-52cvvzmy5q-de.a.run.app/api/get?link=","").replace("/&provider=PusatFilm","")
-        data = detailMovie(link)
-        
-        if "episode" in data:
-            markup = telebot.types.InlineKeyboardMarkup()
-            for e in data['episode']:
-                link = cleanLink(e['link'])
-                id = insertHistory(link,call.message.id)
-                markup.add(telebot.types.InlineKeyboardButton(text="Eps "+e['title'], callback_data="/detail "+str(id)))
-            bot.send_message(call.message.chat.id, data['title'] + "Episode : ", reply_markup=markup,parse_mode="Markdown")
-        else:
-            linkMessage = "Link Streaming "+data['title']+" : \n"
-            markup = telebot.types.InlineKeyboardMarkup()
-            for s in data['stream']:
-                markup.add(telebot.types.InlineKeyboardButton(text=s['title'], url="https://perompak7samudra-52cvvzmy5q-de.a.run.app"+s['detail']))
-                # linkMessage += "["+s['title']+"](https://perompak7samudra-52cvvzmy5q-de.a.run.app"+s['detail']+")\n\n"
-            bot.send_message(call.message.chat.id,  linkMessage, reply_markup=markup,parse_mode="Markdown")
+        try:
+            id = call.data.replace("/detail ","")
+            history = getHistoryById(id)
+            link = history[2]
+            print("Link : "+link)
+            bot.send_message(call.message.chat.id, "Mencari link streaming film silahkan tunggu...")
+            
+            # message_text = call.message.caption
+            # link = message_text.split("\n")[1]
+            # link = call.text.replace("https://perompak7samudra-52cvvzmy5q-de.a.run.app/api/get?link=","").replace("/&provider=PusatFilm","")
+            data = detailMovie(link)
+            
+            if "episode" in data:
+                markup = telebot.types.InlineKeyboardMarkup()
+                for e in data['episode']:
+                    link = cleanLink(e['link'])
+                    id = insertHistory(link,call.message.id)
+                    markup.add(telebot.types.InlineKeyboardButton(text="Eps "+e['title'], callback_data="/detail "+str(id)))
+                bot.send_message(call.message.chat.id, data['title'] + "Episode : ", reply_markup=markup,parse_mode="Markdown")
+            else:
+                linkMessage = "Link Streaming "+data['title']+" : \n"
+                markup = telebot.types.InlineKeyboardMarkup()
+                for s in data['stream']:
+                    markup.add(telebot.types.InlineKeyboardButton(text=s['title'], url="https://perompak7samudra-52cvvzmy5q-de.a.run.app"+s['detail']))
+                    # linkMessage += "["+s['title']+"](https://perompak7samudra-52cvvzmy5q-de.a.run.app"+s['detail']+")\n\n"
+                bot.send_message(call.message.chat.id,  linkMessage, reply_markup=markup,parse_mode="Markdown")
+        except Exception as err:
+            print(err.message)
+            bot.send_message(call.message.chat.id, "Maaf terjadi kesalahan, silahkan coba lagi")
 
 WEB_PORT = os.environ.get('WEB_PORT', '5000')
 WEB_URL = os.environ.get('WEB_URL')
