@@ -34,7 +34,7 @@ try:
     
     print("Berhasil terhubung ke database")
 except Exception as err:
-    print(err.message)
+    print(err)
     print("Gagal terhubung ke database")
     pass
 
@@ -43,7 +43,7 @@ def checkUser(user_id):
     try:
         mycursor = mydb.cursor()
     except Exception as err:
-        print(err.message)
+        print(err)
         mydb = initDb()
         mycursor = mydb.cursor()
     sql = "SELECT * FROM users WHERE user_id = %s"
@@ -60,7 +60,7 @@ def insertUser(user_id,username):
         try:
             mycursor = mydb.cursor()
         except psycopg2.InterfaceError as err:
-            print(err.message)
+            print(err)
             mydb = initDb()
             mycursor = mydb.cursor()
         sql = "INSERT INTO users (user_id, username) VALUES (%s, %s)"
@@ -76,7 +76,7 @@ def getHistoryById(id):
     try:
         mycursor = mydb.cursor()
     except Exception as err:
-        print(err.message)
+        print(err)
         mydb = initDb()
         mycursor = mydb.cursor()
     sql = "SELECT * FROM history_film WHERE id = %s"
@@ -91,7 +91,7 @@ def getHistoryByLink(link):
     try:
         mycursor = mydb.cursor()
     except Exception as err:
-        print(err.message)
+        print(err)
         mydb = initDb()
         mycursor = mydb.cursor()
     sql = "SELECT * FROM history_film WHERE link = %s"
@@ -108,7 +108,7 @@ def insertHistory(link,message_id):
         try:
             mycursor = mydb.cursor()
         except psycopg2.InterfaceError as err:
-            print(err.message)
+            print(err)
             mydb = initDb()
             mycursor = mydb.cursor()
         sql = "INSERT INTO history_film (link, message_id) VALUES (%s, %s) RETURNING id;"
@@ -177,7 +177,7 @@ def send_welcome(message):
     try:
         insertUser(message.from_user.id,message.from_user.username)
     except Exception as err:
-        print(err.message)
+        print(err)
     bot.reply_to(message, """
 Selamat datang di bot PusatFilm
 Ketik /search <judul film> untuk mencari film
@@ -214,7 +214,7 @@ def callback_query(call):
                     # linkMessage += "["+s['title']+"](https://perompak7samudra-52cvvzmy5q-de.a.run.app"+s['detail']+")\n\n"
                 bot.send_message(call.message.chat.id,  linkMessage, reply_markup=markup,parse_mode="Markdown")
         except Exception as err:
-            print(err.message)
+            print(err)
             bot.send_message(call.message.chat.id, "Maaf terjadi kesalahan, silahkan coba lagi")
 
 WEB_PORT = os.environ.get('WEB_PORT', '5000')
