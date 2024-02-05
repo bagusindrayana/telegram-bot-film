@@ -38,6 +38,39 @@ except Exception as err:
     print("Gagal terhubung ke database")
     pass
 
+def checkUser(user_id):
+    global mydb
+    try:
+        mycursor = mydb.cursor()
+    except Exception as err:
+        print(err.message)
+        mydb = initDb()
+        mycursor = mydb.cursor()
+    sql = "SELECT * FROM users WHERE user_id = %s"
+    val = (user_id,)
+    mycursor.execute(sql, val)
+    myresult = mycursor.fetchone()
+    mydb.commit()
+    return myresult
+
+def insertUser(user_id,username):
+    global mydb
+    cek = checkUser(user_id)
+    if cek is None:
+        try:
+            mycursor = mydb.cursor()
+        except psycopg2.InterfaceError as err:
+            print(err.message)
+            mydb = initDb()
+            mycursor = mydb.cursor()
+        sql = "INSERT INTO users (user_id, username) VALUES (%s, %s)"
+        val = (user_id,username)
+        mycursor.execute(sql, val)
+        mydb.commit()
+        return True
+    else:
+        return False
+
 def getHistoryById(id):
     global mydb
     try:
@@ -141,6 +174,7 @@ def search(message):
 
 @bot.message_handler(commands=['start', 'hello','help'])
 def send_welcome(message):
+    insertUser(message.from_user.id,message.from_user.username)
     bot.reply_to(message, """
 Selamat datang di bot PusatFilm
 Ketik /search <judul film> untuk mencari film
