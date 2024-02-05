@@ -174,7 +174,10 @@ def search(message):
 
 @bot.message_handler(commands=['start', 'hello','help'])
 def send_welcome(message):
-    insertUser(message.from_user.id,message.from_user.username)
+    try:
+        insertUser(message.from_user.id,message.from_user.username)
+    except Exception as err:
+        print(err.message)
     bot.reply_to(message, """
 Selamat datang di bot PusatFilm
 Ketik /search <judul film> untuk mencari film
