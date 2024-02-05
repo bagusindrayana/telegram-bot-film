@@ -253,6 +253,30 @@ def status():
     }
     return jsonify(result),200
 
+# route to check status database
+@app.route("/dbstatus")
+def dbstatus():
+    try:
+        cur = mydb.cursor()
+        cur.execute('SELECT 1')
+        return "Database connected",200
+    except Exception as err:
+        return "Database not connected",500
+
+# route list users
+@app.route('/users')
+def users():
+    try:
+        mycursor = mydb.cursor()
+    except Exception as err:
+        print(err)
+        mydb = initDb()
+        mycursor = mydb.cursor()
+    mycursor.execute("SELECT * FROM users")
+    myresult = mycursor.fetchall()
+    mydb.commit()
+    return jsonify(myresult),200
+
 def main():
     if ENV != "production":
         bot.remove_webhook()
