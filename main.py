@@ -235,7 +235,10 @@ def getMessage():
 @app.route("/")
 def webhook():
     bot.remove_webhook()
-    bot.set_webhook(url=HOOK_URL,drop_pending_updates=True)
+    drop_pending_updates = False
+    if request.args.get("drop_pending_updates"):
+        drop_pending_updates = True
+    bot.set_webhook(url=HOOK_URL,drop_pending_updates=drop_pending_updates)
     return "!", 200
 
 # check if webhook is working
