@@ -42,16 +42,21 @@ def checkUser(user_id):
     global mydb
     try:
         mycursor = mydb.cursor()
-    except Exception as err:
+    except psycopg2.InterfaceError as err:
         print(err)
         mydb = initDb()
         mycursor = mydb.cursor()
-    sql = "SELECT * FROM users WHERE user_id = %s"
-    val = (user_id,)
-    mycursor.execute(sql, val)
-    myresult = mycursor.fetchone()
-    mydb.commit()
-    return myresult
+    try:
+        sql = "SELECT * FROM users WHERE user_id = %s"
+        val = (user_id,)
+        mycursor.execute(sql, val)
+        myresult = mycursor.fetchone()
+        mydb.commit()
+        return myresult
+    except Exception as err:
+        print("Error Check User : "+err)
+        return []
+    
 
 def insertUser(user_id,username):
     global mydb
@@ -63,11 +68,15 @@ def insertUser(user_id,username):
             print(err)
             mydb = initDb()
             mycursor = mydb.cursor()
-        sql = "INSERT INTO users (user_id, username) VALUES (%s, %s)"
-        val = (user_id,username)
-        mycursor.execute(sql, val)
-        mydb.commit()
-        return True
+        try:
+            sql = "INSERT INTO users (user_id, username) VALUES (%s, %s)"
+            val = (user_id,username)
+            mycursor.execute(sql, val)
+            mydb.commit()
+            return True
+        except Exception as err:
+            print("Error Insert User : "+err)
+            return False
     else:
         return False
 
