@@ -17,6 +17,8 @@ DB_PORT = os.environ.get('DB_PORT')
 DB_USER = os.environ.get('DB_USER')
 DB_PASS = os.environ.get('DB_PASS')
 DB_NAME = os.environ.get('DB_NAME')
+API_URL = os.environ.get('API_URL')
+API_PROVIDER = os.environ.get('API_PROVIDER')
 
 def initDb():
     db = psycopg2.connect(
@@ -134,11 +136,11 @@ def insertHistory(link,message_id):
 # print(data[1])
 # exit()
 bot = telebot.TeleBot(BOT_TOKEN, threaded=False)
-api_url = OS.environ.get('API_URL')
+
 
 def searchMovie(movieName):
     print("Start search movie ",movieName)
-    url = api_url+"/search?query=" + movieName + "&providers[]=PusatFilm"
+    url = API_URL+"/search?query=" + movieName + "&providers[]="+API_PROVIDER
     response = requests.get(url)
     if response.status_code != 200:
         print("Error : "+response.text)
@@ -147,14 +149,14 @@ def searchMovie(movieName):
         data = response.json()
         return data
 def detailMovie(movieLink):
-    url = api_url + "/get?link=" + movieLink + "/&provider=PusatFilm"
+    url = API_URL + "/get?link=" + movieLink + "/&provider="+API_PROVIDER
     print(url)
     response = requests.get(url)
     data = response.json()
     return data
 
 def cleanLink(link):
-    return link.replace("/api/get?link=","").replace("/&provider=PusatFilm","")
+    return link.replace("/api/get?link=","").replace("/&provider="+API_PROVIDER,"")
 
 
 
@@ -205,7 +207,7 @@ def callback_query(call):
             
             # message_text = call.message.caption
             # link = message_text.split("\n")[1]
-            # link = call.text.replace("https://perompak7samudra-52cvvzmy5q-de.a.run.app/api/get?link=","").replace("/&provider=PusatFilm","")
+            # link = call.text.replace("https://perompak7samudra-52cvvzmy5q-de.a.run.app/api/get?link=","").replace("/&provider="+API_PROVIDER,"")
             data = detailMovie(link)
             
             if "episode" in data:
