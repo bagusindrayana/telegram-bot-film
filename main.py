@@ -134,7 +134,7 @@ def insertHistory(link,message_id):
 # print(data[1])
 # exit()
 bot = telebot.TeleBot(BOT_TOKEN, threaded=False)
-api_url = "https://perompak7samudra-52cvvzmy5q-de.a.run.app/api"
+api_url = OS.environ.get('API_URL')
 
 def searchMovie(movieName):
     print("Start search movie ",movieName)
