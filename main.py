@@ -204,10 +204,6 @@ def callback_query(call):
             link = history[2]
             print("Link : "+link)
             bot.send_message(call.message.chat.id, "Mencari link streaming film silahkan tunggu...")
-            
-            # message_text = call.message.caption
-            # link = message_text.split("\n")[1]
-            # link = call.text.replace("https://perompak7samudra-52cvvzmy5q-de.a.run.app/api/get?link=","").replace("/&provider="+API_PROVIDER,"")
             data = detailMovie(link)
             
             if "episode" in data:
@@ -221,8 +217,7 @@ def callback_query(call):
                 linkMessage = "Link Streaming "+data['title']+" : \n"
                 markup = telebot.types.InlineKeyboardMarkup()
                 for s in data['stream']:
-                    markup.add(telebot.types.InlineKeyboardButton(text=s['title'], url="https://perompak7samudra-52cvvzmy5q-de.a.run.app"+s['detail']))
-                    # linkMessage += "["+s['title']+"](https://perompak7samudra-52cvvzmy5q-de.a.run.app"+s['detail']+")\n\n"
+                    markup.add(telebot.types.InlineKeyboardButton(text=s['title'], url=API_URL+s['detail']))
                 bot.send_message(call.message.chat.id,  linkMessage, reply_markup=markup,parse_mode="Markdown")
         except Exception as err:
             print(err)
