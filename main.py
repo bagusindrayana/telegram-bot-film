@@ -1,6 +1,7 @@
 import os
 import requests
 import json
+import traceback
 from dotenv import load_dotenv
 import telebot
 import psycopg2
@@ -50,7 +51,7 @@ def checkUser(user_id):
         mycursor = mydb.cursor()
     try:
         sql = "SELECT * FROM users WHERE user_id = %s"
-        val = (user_id,)
+        val = (str(user_id))
         mycursor.execute(sql, val)
         myresult = mycursor.fetchone()
         mydb.commit()
@@ -189,6 +190,10 @@ def send_welcome(message):
         insertUser(message.from_user.id,message.from_user.username)
     except Exception as err:
         print(err)
+        print(err.__traceback__)
+        # # print traceback
+        # traceback.print_tb(err.__traceback__)
+
     bot.reply_to(message, """
 Selamat datang di bot PusatFilm
 Ketik /search <judul film> untuk mencari film
