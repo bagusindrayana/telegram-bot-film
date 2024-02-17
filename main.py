@@ -72,7 +72,7 @@ def insertUser(user_id,username):
             mycursor = mydb.cursor()
         try:
             sql = "INSERT INTO users (user_id, username) VALUES (%s, %s)"
-            val = (user_id,username)
+            val = (str(user_id),str(username))
             mycursor.execute(sql, val)
             mydb.commit()
             return True
