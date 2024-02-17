@@ -135,9 +135,6 @@ def insertHistory(link,message_id):
     else:
         return cek[0]
 
-# data = getHistoryByLink("https://pusatfilm21.vip/tv/one-piece-2")
-# print(data[1])
-# exit()
 bot = telebot.TeleBot(BOT_TOKEN, threaded=False)
 
 
@@ -179,8 +176,6 @@ def search(message):
         bot.reply_to(message, "Film "+movieName+" tidak ditemukan")
         return
 
-    # send message photo and title
-    # when user click the message, call detailMovie function
     for i in data5:
         link = cleanLink(i['link'])
         id = insertHistory(link,message.id)
@@ -196,11 +191,10 @@ def send_welcome(message):
     except Exception as err:
         print(err)
         print(err.__traceback__)
-        # print traceback
         traceback.print_tb(err.__traceback__)
 
     bot.reply_to(message, """
-Selamat datang di bot PusatFilm
+Selamat datang di bot """+API_PROVIDER+"""
 Ketik /search <judul film> untuk mencari film
 """)
 
@@ -224,7 +218,7 @@ def callback_query(call):
                     markup.add(telebot.types.InlineKeyboardButton(text="Eps "+e['title'], callback_data="/detail "+str(id)))
                 bot.send_message(call.message.chat.id, data['title'] + "Episode : ", reply_markup=markup,parse_mode="Markdown")
             else:
-                linkMessage = "Link Streaming "+data['title']+" : \n"
+                linkMessage = "Link Streaming "+data['title']+" (Tidak Menjamin Semua Link Work): \n"
                 markup = telebot.types.InlineKeyboardMarkup()
                 for s in data['stream']:
                     markup.add(telebot.types.InlineKeyboardButton(text=s['title'], url=API_URL+s['detail']))
@@ -236,15 +230,12 @@ def callback_query(call):
 WEB_PORT = os.environ.get('WEB_PORT', '5000')
 WEB_URL = os.environ.get('WEB_URL')
 HOOK_URL = WEB_URL + '/' + BOT_TOKEN
-# bot.start_webhook(listen='0.0.0.0', port=WEB_PORT, url_path=BOT_TOKEN, webhook_url=HOOK_URL)
-# bot.idle()
 
 @app.route('/' + BOT_TOKEN, methods=['POST'])
 def getMessage():
     json_string = request.get_data().decode('utf-8')
     update = telebot.types.Update.de_json(json_string)
     bot.process_new_updates([update])
-    # bot.process_new_updates([telebot.types.Update.de_json(request.stream.read().decode("utf-8"))])
     return "!", 200
 
 @app.route("/")
