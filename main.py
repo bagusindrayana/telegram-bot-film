@@ -191,8 +191,8 @@ def send_welcome(message):
     except Exception as err:
         print(err)
         print(err.__traceback__)
-        # # print traceback
-        # traceback.print_tb(err.__traceback__)
+        # print traceback
+        traceback.print_tb(err.__traceback__)
 
     bot.reply_to(message, """
 Selamat datang di bot PusatFilm
