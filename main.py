@@ -51,14 +51,15 @@ def checkUser(user_id):
         mycursor = mydb.cursor()
     try:
         sql = "SELECT * FROM users WHERE user_id = %s"
-        val = (str(user_id))
+        val = [user_id]
         mycursor.execute(sql, val)
         myresult = mycursor.fetchone()
         mydb.commit()
         return myresult
     except Exception as err:
-        print("Error Check User : "+err)
-        return []
+        print("Error Check User : ")
+        print(err)
+        return None
     
 
 def insertUser(user_id,username):
@@ -73,12 +74,13 @@ def insertUser(user_id,username):
             mycursor = mydb.cursor()
         try:
             sql = "INSERT INTO users (user_id, username) VALUES (%s, %s)"
-            val = (str(user_id),str(username))
+            val = (user_id,str(username))
             mycursor.execute(sql, val)
             mydb.commit()
             return True
         except Exception as err:
-            print("Error Insert User : "+err)
+            print("Error Insert User : ")
+            print(err)
             return False
     else:
         return False
@@ -140,11 +142,11 @@ bot = telebot.TeleBot(BOT_TOKEN, threaded=False)
 
 
 def searchMovie(movieName):
-    print("Start search movie ",movieName)
-    url = API_URL+"/search?query=" + movieName + "&providers[]="+API_PROVIDER
+    print("Start search movie... ",movieName)
+    url = API_URL+"/search?query=" + str(movieName) + "&providers[]="+API_PROVIDER
     response = requests.get(url)
     if response.status_code != 200:
-        print("Error : "+response.text)
+        print("Error : "+str(response.text))
         return []
     else:
         data = response.json()
@@ -163,6 +165,8 @@ def cleanLink(link):
 
 @bot.message_handler(commands=['search'])
 def search(message):
+    print(message.from_user.id,message.from_user.username)
+    print("Search movie... ",message.text)
     movieName = message.text.replace("/search ", "")
     if movieName == "" or movieName == "/search":
         bot.reply_to(message, "Silahkan ketik /search <judul film> untuk mencari film")
@@ -186,6 +190,7 @@ def search(message):
 
 @bot.message_handler(commands=['start', 'hello','help'])
 def send_welcome(message):
+    print(message.from_user.id,message.from_user.username)
     try:
         insertUser(message.from_user.id,message.from_user.username)
     except Exception as err:
@@ -238,7 +243,6 @@ HOOK_URL = WEB_URL + '/' + BOT_TOKEN
 def getMessage():
     json_string = request.get_data().decode('utf-8')
     update = telebot.types.Update.de_json(json_string)
-    print(json_string)
     bot.process_new_updates([update])
     # bot.process_new_updates([telebot.types.Update.de_json(request.stream.read().decode("utf-8"))])
     return "!", 200
