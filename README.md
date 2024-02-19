@@ -5,12 +5,19 @@ Bot Telegram untuk mencari link stream film dari PusatFilm melalui api https://p
 - Clone repository ini
 - `pip install -r requirements.txt`
 - buat database postgresql
-- buat table `history_film`
+- buat table `history_film` dan `users`
   ```sql
     CREATE TABLE history_film (
         id serial PRIMARY KEY,
         message_id varchar(255) NOT NULL,
         link varchar(255) NOT NULL,
+        created_at timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
+    );
+
+    CREATE TABLE users (
+        id serial PRIMARY KEY,
+        user_id BIGINT NOT NULL,
+        username varchar(255) NOT NULL,
         created_at timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
     );
     ```

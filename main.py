@@ -20,6 +20,7 @@ DB_PASS = os.environ.get('DB_PASS')
 DB_NAME = os.environ.get('DB_NAME')
 API_URL = os.environ.get('API_URL')
 API_PROVIDER = os.environ.get('API_PROVIDER')
+IFRAME_LINK = os.environ.get('IFRAME_LINK')
 
 def initDb():
     db = psycopg2.connect(
@@ -221,7 +222,7 @@ def callback_query(call):
                 linkMessage = "Link Streaming "+data['title']+" (Tidak Menjamin Semua Link Work): \n"
                 markup = telebot.types.InlineKeyboardMarkup()
                 for s in data['stream']:
-                    markup.add(telebot.types.InlineKeyboardButton(text=s['title'], url=API_URL+s['detail']))
+                    markup.add(telebot.types.InlineKeyboardButton(text=s['title'], url=IFRAME_LINK+s['detail']))
                 bot.send_message(call.message.chat.id,  linkMessage, reply_markup=markup,parse_mode="Markdown")
         except Exception as err:
             print(err)
