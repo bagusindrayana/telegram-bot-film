@@ -167,7 +167,7 @@ def search(message):
     print("Search movie... ",message.text)
     movieName = message.text.replace("/search ", "")
     if movieName == "" or movieName == "/search":
-        bot.reply_to(message, "Silahkan ketik /search <judul film> untuk mencari film")
+        bot.reply_to(message, 'Silahkan ketik /search "judul film" (tanpa tanda kutip) untuk mencari film, contoh /search avenger')
         return
     bot.reply_to(message, "Mencari film "+movieName+" silahkan tunggu...")
     data = searchMovie(movieName)
@@ -196,7 +196,7 @@ def send_welcome(message):
 
     bot.reply_to(message, """
 Selamat datang di bot """+API_PROVIDER+"""
-Ketik /search <judul film> untuk mencari film
+Ketik /search "judul film" (tanpa tanda kutip) untuk mencari film, contoh /search avenger
 """)
 
 @bot.callback_query_handler(func=lambda call: True)
@@ -217,7 +217,7 @@ def callback_query(call):
                     link = cleanLink(e['link'])
                     id = insertHistory(link,call.message.id)
                     markup.add(telebot.types.InlineKeyboardButton(text="Eps "+e['title'], callback_data="/detail "+str(id)))
-                bot.send_message(call.message.chat.id, data['title'] + "Episode : ", reply_markup=markup,parse_mode="Markdown")
+                bot.send_message(call.message.chat.id, data['title'] + " Episode : ", reply_markup=markup,parse_mode="Markdown")
             else:
                 linkMessage = "Link Streaming "+data['title']+" (Tidak Menjamin Semua Link Work): \n"
                 markup = telebot.types.InlineKeyboardMarkup()
