@@ -222,7 +222,10 @@ def callback_query(call):
                 linkMessage = "Link Streaming "+data['title']+" (Tidak Menjamin Semua Link Work): \n"
                 markup = telebot.types.InlineKeyboardMarkup()
                 for s in data['stream']:
-                    markup.add(telebot.types.InlineKeyboardButton(text=s['title'], url=IFRAME_LINK+s['detail']))
+                    if s['detail'] == None or s['detail'] == "" or s['detail'] == "None" or s['detail'] == "null":
+                        markup.add(telebot.types.InlineKeyboardButton(text=s['title'], url=s['link']))
+                    else:
+                        markup.add(telebot.types.InlineKeyboardButton(text=s['title'], url=IFRAME_LINK+s['detail']))
                 bot.send_message(call.message.chat.id,  linkMessage, reply_markup=markup,parse_mode="Markdown")
         except Exception as err:
             print(err)
