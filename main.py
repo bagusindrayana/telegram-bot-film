@@ -225,7 +225,7 @@ def callback_query(call):
                     if s['detail'] == None or s['detail'] == "" or s['detail'] == "None" or s['detail'] == "null":
                         markup.add(telebot.types.InlineKeyboardButton(text=s['title'], url=s['link']))
                     else:
-                        if "iframe" in s['detail']:
+                        if "/iframe?link=" in s['detail']:
                             link_frame = IFRAME_LINK+s['detail']
                         else:
                             link_frame = s['detail']
