@@ -225,7 +225,11 @@ def callback_query(call):
                     if s['detail'] == None or s['detail'] == "" or s['detail'] == "None" or s['detail'] == "null":
                         markup.add(telebot.types.InlineKeyboardButton(text=s['title'], url=s['link']))
                     else:
-                        markup.add(telebot.types.InlineKeyboardButton(text=s['title'], url=IFRAME_LINK+s['detail']))
+                        if "iframe" in s['detail']:
+                            link_frame = IFRAME_LINK+s['detail']
+                        else:
+                            link_frame = s['detail']
+                        markup.add(telebot.types.InlineKeyboardButton(text=s['title'], url=link_frame))
                 bot.send_message(call.message.chat.id,  linkMessage, reply_markup=markup,parse_mode="Markdown")
         except Exception as err:
             print(err)
