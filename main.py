@@ -223,6 +223,11 @@ def callback_query(call):
                 markup = telebot.types.InlineKeyboardMarkup()
                 for s in data['stream']:
                     if s['detail'] == None or s['detail'] == "" or s['detail'] == "None" or s['detail'] == "null":
+                        streamLink = s['link']
+                        # if steramLink start with //
+                        if streamLink.startswith("//"):
+                            streamLink = "https:"+streamLink
+
                         markup.add(telebot.types.InlineKeyboardButton(text=s['title'], url=s['link']))
                     else:
                         if "/iframe?link=" in s['detail']:
