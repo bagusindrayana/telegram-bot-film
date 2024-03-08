@@ -228,7 +228,7 @@ def callback_query(call):
                         if streamLink.startswith("//"):
                             streamLink = "https:"+streamLink
 
-                        markup.add(telebot.types.InlineKeyboardButton(text=s['title'], url=s['link']))
+                        markup.add(telebot.types.InlineKeyboardButton(text=s['title'], url=streamLink))
                     else:
                         if "/iframe?link=" in s['detail']:
                             link_frame = IFRAME_LINK+s['detail']
