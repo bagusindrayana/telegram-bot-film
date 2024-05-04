@@ -296,6 +296,12 @@ def users():
     mydb.commit()
     return jsonify(myresult),200
 
+@app.route("/stop")
+def stop():
+    bot.remove_webhook()
+    bot.stop_polling()
+    return "Bot stopped",200
+
 def main():
     if ENV != "production":
         bot.remove_webhook()
