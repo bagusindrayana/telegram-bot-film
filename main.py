@@ -182,7 +182,11 @@ def search(message):
         id = insertHistory(link,message.id)
         markup = telebot.types.InlineKeyboardMarkup()
         markup.add(telebot.types.InlineKeyboardButton(text="Link Stream 🎥", callback_data="/detail "+str(id)))
-        bot.send_photo(message.chat.id, i['thumb'], caption=i['title'],  reply_markup=markup,parse_mode="Markdown")
+        try:
+            bot.send_photo(message.chat.id, i['thumb'], caption=i['title'],  reply_markup=markup,parse_mode="Markdown")
+        except Exception as err:
+            print(err)
+            bot.send_message(message.chat.id, "Link Stream "+i['title'],reply_markup=markup,parse_mode="Markdown")
 
 @bot.message_handler(commands=['start', 'hello','help'])
 def send_welcome(message):
