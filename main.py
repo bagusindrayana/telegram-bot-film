@@ -22,119 +22,119 @@ API_URL = os.environ.get('API_URL')
 API_PROVIDER = os.environ.get('API_PROVIDER')
 IFRAME_LINK = os.environ.get('IFRAME_LINK')
 
-def initDb():
-    db = psycopg2.connect(
-        host=DB_HOST,
-        port=DB_PORT,
-        user=DB_USER,
-        password=DB_PASS,
-        database=DB_NAME
-    )
-    return db
-mydb = initDb()
-try:
-    cur = mydb.cursor()
-    cur.execute('SELECT 1')
+# def initDb():
+#     db = psycopg2.connect(
+#         host=DB_HOST,
+#         port=DB_PORT,
+#         user=DB_USER,
+#         password=DB_PASS,
+#         database=DB_NAME
+#     )
+#     return db
+# mydb = initDb()
+# try:
+#     cur = mydb.cursor()
+#     cur.execute('SELECT 1')
     
-    print("Berhasil terhubung ke database")
-except Exception as err:
-    print(err)
-    print("Gagal terhubung ke database")
-    pass
+#     print("Berhasil terhubung ke database")
+# except Exception as err:
+#     print(err)
+#     print("Gagal terhubung ke database")
+#     pass
 
-def checkUser(user_id):
-    global mydb
-    try:
-        mycursor = mydb.cursor()
-    except psycopg2.InterfaceError as err:
-        print(err)
-        mydb = initDb()
-        mycursor = mydb.cursor()
-    try:
-        sql = "SELECT * FROM users WHERE user_id = %s"
-        val = [user_id]
-        mycursor.execute(sql, val)
-        myresult = mycursor.fetchone()
-        mydb.commit()
-        return myresult
-    except Exception as err:
-        print("Error Check User : ")
-        print(err)
-        return None
+# def checkUser(user_id):
+#     global mydb
+#     try:
+#         mycursor = mydb.cursor()
+#     except psycopg2.InterfaceError as err:
+#         print(err)
+#         mydb = initDb()
+#         mycursor = mydb.cursor()
+#     try:
+#         sql = "SELECT * FROM users WHERE user_id = %s"
+#         val = [user_id]
+#         mycursor.execute(sql, val)
+#         myresult = mycursor.fetchone()
+#         mydb.commit()
+#         return myresult
+#     except Exception as err:
+#         print("Error Check User : ")
+#         print(err)
+#         return None
     
 
-def insertUser(user_id,username):
-    global mydb
-    cek = checkUser(user_id)
-    if cek is None:
-        try:
-            mycursor = mydb.cursor()
-        except psycopg2.InterfaceError as err:
-            print(err)
-            mydb = initDb()
-            mycursor = mydb.cursor()
-        try:
-            sql = "INSERT INTO users (user_id, username) VALUES (%s, %s)"
-            val = (user_id,str(username))
-            mycursor.execute(sql, val)
-            mydb.commit()
-            return True
-        except Exception as err:
-            print("Error Insert User : ")
-            print(err)
-            return False
-    else:
-        return False
+# def insertUser(user_id,username):
+#     global mydb
+#     cek = checkUser(user_id)
+#     if cek is None:
+#         try:
+#             mycursor = mydb.cursor()
+#         except psycopg2.InterfaceError as err:
+#             print(err)
+#             mydb = initDb()
+#             mycursor = mydb.cursor()
+#         try:
+#             sql = "INSERT INTO users (user_id, username) VALUES (%s, %s)"
+#             val = (user_id,str(username))
+#             mycursor.execute(sql, val)
+#             mydb.commit()
+#             return True
+#         except Exception as err:
+#             print("Error Insert User : ")
+#             print(err)
+#             return False
+#     else:
+#         return False
 
-def getHistoryById(id):
-    global mydb
-    try:
-        mycursor = mydb.cursor()
-    except Exception as err:
-        print(err)
-        mydb = initDb()
-        mycursor = mydb.cursor()
-    sql = "SELECT * FROM history_film WHERE id = %s"
-    val = (id,)
-    mycursor.execute(sql, val)
-    myresult = mycursor.fetchone()
-    mydb.commit()
-    return myresult
+# def getHistoryById(id):
+#     global mydb
+#     try:
+#         mycursor = mydb.cursor()
+#     except Exception as err:
+#         print(err)
+#         mydb = initDb()
+#         mycursor = mydb.cursor()
+#     sql = "SELECT * FROM history_film WHERE id = %s"
+#     val = (id,)
+#     mycursor.execute(sql, val)
+#     myresult = mycursor.fetchone()
+#     mydb.commit()
+#     return myresult
 
-def getHistoryByLink(link):
-    global mydb
-    try:
-        mycursor = mydb.cursor()
-    except Exception as err:
-        print(err)
-        mydb = initDb()
-        mycursor = mydb.cursor()
-    sql = "SELECT * FROM history_film WHERE link = %s"
-    val = (link,)
-    mycursor.execute(sql, val)
-    myresult = mycursor.fetchone()
-    mydb.commit()
-    return myresult
+# def getHistoryByLink(link):
+#     global mydb
+#     try:
+#         mycursor = mydb.cursor()
+#     except Exception as err:
+#         print(err)
+#         mydb = initDb()
+#         mycursor = mydb.cursor()
+#     sql = "SELECT * FROM history_film WHERE link = %s"
+#     val = (link,)
+#     mycursor.execute(sql, val)
+#     myresult = mycursor.fetchone()
+#     mydb.commit()
+#     return myresult
 
-def insertHistory(link,message_id):
-    global mydb
-    cek = getHistoryByLink(link)
-    if cek is None:
-        try:
-            mycursor = mydb.cursor()
-        except psycopg2.InterfaceError as err:
-            print(err)
-            mydb = initDb()
-            mycursor = mydb.cursor()
-        sql = "INSERT INTO history_film (link, message_id) VALUES (%s, %s) RETURNING id;"
-        val = (link,message_id)
-        mycursor.execute(sql, val)
-        data = mycursor.fetchone()
-        mydb.commit()
-        id_of_new_row = data[0]
-        return id_of_new_row
-    else:
-        return cek[0]
+# def insertHistory(link,message_id):
+#     global mydb
+#     cek = getHistoryByLink(link)
+#     if cek is None:
+#         try:
+#             mycursor = mydb.cursor()
+#         except psycopg2.InterfaceError as err:
+#             print(err)
+#             mydb = initDb()
+#             mycursor = mydb.cursor()
+#         sql = "INSERT INTO history_film (link, message_id) VALUES (%s, %s) RETURNING id;"
+#         val = (link,message_id)
+#         mycursor.execute(sql, val)
+#         data = mycursor.fetchone()
+#         mydb.commit()
+#         id_of_new_row = data[0]
+#         return id_of_new_row
+#     else:
+#         return cek[0]
 
 bot = telebot.TeleBot(BOT_TOKEN, threaded=False)
 
@@ -179,9 +179,9 @@ def search(message):
 
     for i in data5:
         link = cleanLink(i['link'])
-        id = insertHistory(link,message.id)
+        # id = insertHistory(link,message.id)
         markup = telebot.types.InlineKeyboardMarkup()
-        markup.add(telebot.types.InlineKeyboardButton(text="Link Stream 🎥", callback_data="/detail "+str(id)))
+        markup.add(telebot.types.InlineKeyboardButton(text="Link Stream 🎥", callback_data="/detail "+str(link)))
         try:
             bot.send_photo(message.chat.id, i['thumb'], caption=i['title'],  reply_markup=markup,parse_mode="Markdown")
         except Exception as err:
@@ -191,12 +191,12 @@ def search(message):
 @bot.message_handler(commands=['start', 'hello','help'])
 def send_welcome(message):
     print(message.from_user.id,message.from_user.username)
-    try:
-        insertUser(message.from_user.id,message.from_user.username)
-    except Exception as err:
-        print(err)
-        print(err.__traceback__)
-        traceback.print_tb(err.__traceback__)
+    # try:
+    #     insertUser(message.from_user.id,message.from_user.username)
+    # except Exception as err:
+    #     print(err)
+    #     print(err.__traceback__)
+    #     traceback.print_tb(err.__traceback__)
 
     bot.reply_to(message, """
 Selamat datang di bot """+API_PROVIDER+"""
@@ -208,10 +208,10 @@ def callback_query(call):
     if call.data.startswith("/detail"):
         # print(call.text)
         try:
-            id = call.data.replace("/detail ","")
-            history = getHistoryById(id)
-            link = history[2]
-            print("Link : "+link)
+            link = call.data.replace("/detail ","")
+            # history = getHistoryById(id)
+            # link = history[2]
+            # print("Link : "+link)
             bot.send_message(call.message.chat.id, "Mencari link streaming film silahkan tunggu...")
             data = detailMovie(link)
             
@@ -219,8 +219,8 @@ def callback_query(call):
                 markup = telebot.types.InlineKeyboardMarkup()
                 for e in data['episode']:
                     link = cleanLink(e['link'])
-                    id = insertHistory(link,call.message.id)
-                    markup.add(telebot.types.InlineKeyboardButton(text="Eps "+e['title'], callback_data="/detail "+str(id)))
+                    # id = insertHistory(link,call.message.id)
+                    markup.add(telebot.types.InlineKeyboardButton(text="Eps "+e['title'], callback_data="/detail "+str(link)))
                 bot.send_message(call.message.chat.id, data['title'] + " Episode : ", reply_markup=markup,parse_mode="Markdown")
             else:
                 linkMessage = "Link Streaming "+data['title']+" (Tidak Menjamin Semua Link Work): \n"
@@ -280,8 +280,8 @@ def status():
 @app.route("/dbstatus")
 def dbstatus():
     try:
-        cur = mydb.cursor()
-        cur.execute('SELECT 1')
+        # cur = mydb.cursor()
+        # cur.execute('SELECT 1')
         return "Database connected",200
     except Exception as err:
         return "Database not connected",500
@@ -289,15 +289,16 @@ def dbstatus():
 # route list users
 @app.route('/users')
 def users():
-    try:
-        mycursor = mydb.cursor()
-    except Exception as err:
-        print(err)
-        mydb = initDb()
-        mycursor = mydb.cursor()
-    mycursor.execute("SELECT * FROM users")
-    myresult = mycursor.fetchall()
-    mydb.commit()
+    # try:
+    #     mycursor = mydb.cursor()
+    # except Exception as err:
+    #     print(err)
+    #     mydb = initDb()
+    #     mycursor = mydb.cursor()
+    # mycursor.execute("SELECT * FROM users")
+    # myresult = mycursor.fetchall()
+    # mydb.commit()
+    myresult = []
     return jsonify(myresult),200
 
 @app.route("/stop")
