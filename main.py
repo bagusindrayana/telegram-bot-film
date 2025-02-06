@@ -193,7 +193,7 @@ def search(message):
                 bot.send_photo(message.chat.id, i['thumb'], caption=i['title'],  reply_markup=markup,parse_mode="Markdown")
             except Exception as err:
                 print(err)
-                bot.send_message(message.chat.id, "Link Stream "+i['title'],reply_markup=markup,parse_mode="Markdown")
+                bot.send_message(message.chat.id, "Link Stream "+i['title']+" : "+str(link))
         else:
             bot.send_photo(message.chat.id, i['thumb'], caption=i['title'])
             bot.send_message(message.chat.id, "Link Stream "+i['title']+" : "+str(link))
