@@ -166,10 +166,15 @@ def search(message):
     print(message.from_user.id,message.from_user.username)
     print("Search movie... ",message.text)
     movieName = message.text.replace("/search ", "")
-    if movieName == "" or movieName == "/search":
-        bot.reply_to(message, 'Silahkan ketik /search "judul film" (tanpa tanda kutip) untuk mencari film, contoh /search avenger')
+    
+    try:
+        if movieName == "" or movieName == "/search":
+            bot.reply_to(message, 'Silahkan ketik /search "judul film" (tanpa tanda kutip) untuk mencari film, contoh /search avenger')
+            return
+        bot.reply_to(message, "Mencari film "+movieName+" silahkan tunggu...")
+    except Exception as err:
+        print(err)
         return
-    bot.reply_to(message, "Mencari film "+movieName+" silahkan tunggu...")
     data = searchMovie(movieName)
     data5 = data[:5]
 
