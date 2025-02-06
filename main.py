@@ -190,6 +190,7 @@ def search(message):
                 print(err)
                 bot.send_message(message.chat.id, "Link Stream "+i['title'],reply_markup=markup,parse_mode="Markdown")
         else:
+            bot.send_photo(message.chat.id, i['thumb'], caption=i['title'])
             bot.send_message(message.chat.id, "Link Stream "+i['title']+" : "+str(link))
 
 @bot.message_handler(commands=['start', 'hello','help'])
