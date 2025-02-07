@@ -136,7 +136,7 @@ IFRAME_LINK = os.environ.get('IFRAME_LINK')
 #     else:
 #         return cek[0]
 
-bot = telebot.TeleBot(BOT_TOKEN, threaded=False)
+bot = telebot.TeleBot(BOT_TOKEN, threaded=ENV != "production")
 
 
 def searchMovie(movieName):
@@ -182,21 +182,44 @@ def search(message):
         bot.reply_to(message, "Film "+movieName+" tidak ditemukan")
         return
 
+    
     for i in data5:
         link = cleanLink(i['link'])
         # id = insertHistory(link,message.id)
-        markup = telebot.types.InlineKeyboardMarkup()
-        # check link length
-        if len(str(link).encode('utf-8')) <= 64:
+        
+
+        try:
+            markup = telebot.types.InlineKeyboardMarkup()
             markup.add(telebot.types.InlineKeyboardButton(text="Link Stream 🎥", callback_data="/detail "+str(link)))
+            bot.send_photo(message.chat.id, i['thumb'], caption='<a href="'+str(link)+'">\u200b</a><b>'+i['title']+'</b>',  reply_markup=markup,parse_mode="HTML")
+        except Exception as err:
+            print("ERROR 1 : ",err)
             try:
-                bot.send_photo(message.chat.id, i['thumb'], caption=i['title'],  reply_markup=markup,parse_mode="Markdown")
+                markup = telebot.types.InlineKeyboardMarkup()
+                markup.add(telebot.types.InlineKeyboardButton(text="Link Stream 🎥", callback_data="/detail "+str(link)))
+                bot.send_message(message.chat.id, '<a href="'+str(link)+'">\u200b</a><b>'+i['title']+'</b>',  reply_markup=markup,parse_mode="HTML")
             except Exception as err:
-                print(err)
-                bot.send_message(message.chat.id, "Link Stream "+i['title']+" : "+str(link),parse_mode="Markdown")
-        else:
-            bot.send_photo(message.chat.id, i['thumb'], caption=i['title'])
-            bot.send_message(message.chat.id, "Link Stream "+i['title']+" : "+str(link),parse_mode="Markdown")
+                print("ERROR 2 : ",err)
+                try:
+                    markup = telebot.types.InlineKeyboardMarkup()
+                    markup.add(telebot.types.InlineKeyboardButton(text="Link Stream 🎥", callback_data="/detail [btn:0]"))
+                    bot.send_message(message.chat.id, '<a href="'+str(link)+'">\u200b</a>'+i['title'],  reply_markup=markup,parse_mode="HTML")
+                except Exception as err:
+                    print("ERROR 3 : ",err)
+                    bot.send_message(message.chat.id, "Link Stream <b>"+i['title']+"</b> : "+str(link),parse_mode="HTML")
+               
+
+        # check link length
+        # if len(str(link).encode('utf-8')) <= 64:
+        #     markup.add(telebot.types.InlineKeyboardButton(text="Link Stream 🎥", callback_data="/detail "+str(link)))
+        #     try:
+        #         bot.send_photo(message.chat.id, i['thumb'], caption=i['title'],  reply_markup=markup,parse_mode="Markdown")
+        #     except Exception as err:
+        #         print(err)
+        #         bot.send_message(message.chat.id, "Link Stream "+i['title']+" : "+str(link),parse_mode="Markdown")
+        # else:
+        #     bot.send_photo(message.chat.id, i['thumb'], caption=i['title'])
+        #     bot.send_message(message.chat.id, "Link Stream "+i['title']+" : "+str(link),parse_mode="Markdown")
 
 @bot.message_handler(commands=['start', 'hello','help'])
 def send_welcome(message):
@@ -216,10 +239,18 @@ Ketik /search "judul film" (tanpa tanda kutip) untuk mencari film, contoh /searc
 @bot.callback_query_handler(func=lambda call: True)
 def callback_query(call):
     if call.data.startswith("/detail"):
-        print(call.message)
-        print(call.message.text)
+        link = call.data.replace("/detail ","")
+        print(link)
+        # loop call.message.entities when type is text_link
+        links = []
+        for entity in call.message.entities:
+            if entity.type == "text_link":
+                links.append(entity.url)
+        if link.startswith("[btn:"):
+            index = int(link.replace("[btn:","").replace("]",""))
+            link = links[index]
         try:
-            link = call.data.replace("/detail ","")
+            
             # history = getHistoryById(id)
             # link = history[2]
             # print("Link : "+link)
@@ -228,11 +259,15 @@ def callback_query(call):
             
             if "episode" in data:
                 markup = telebot.types.InlineKeyboardMarkup()
+                strLink = ""
+                index = 0
                 for e in data['episode']:
                     link = cleanLink(e['link'])
                     # id = insertHistory(link,call.message.id)
-                    markup.add(telebot.types.InlineKeyboardButton(text="Eps "+e['title'], callback_data="/detail "+str(link)))
-                bot.send_message(call.message.chat.id, data['title'] + " Episode : ", reply_markup=markup,parse_mode="Markdown")
+                    markup.add(telebot.types.InlineKeyboardButton(text="Eps "+e['title'], callback_data="/detail [btn:"+str(index)+"]"))
+                    index += 1
+                    strLink += '<a href="'+str(link)+'">\u200b</a>'
+                bot.send_message(call.message.chat.id, strLink+"<b>"+data['title'] + "</b> Episode (urutan season dari paling bawah) : ", reply_markup=markup,parse_mode="HTML")
             else:
                 linkMessage = "Link Streaming "+data['title']+" (Tidak Menjamin Semua Link Work): \n"
                 markup = telebot.types.InlineKeyboardMarkup()
@@ -319,6 +354,7 @@ def stop():
     return "Bot stopped",200
 
 def main():
+    print(ENV)
     if ENV != "production":
         bot.remove_webhook()
         bot.infinity_polling()
