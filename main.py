@@ -193,10 +193,10 @@ def search(message):
                 bot.send_photo(message.chat.id, i['thumb'], caption=i['title'],  reply_markup=markup,parse_mode="Markdown")
             except Exception as err:
                 print(err)
-                bot.send_message(message.chat.id, "Link Stream "+i['title']+" : "+str(link))
+                bot.send_message(message.chat.id, "Link Stream "+i['title']+" : "+str(link),parse_mode="Markdown")
         else:
             bot.send_photo(message.chat.id, i['thumb'], caption=i['title'])
-            bot.send_message(message.chat.id, "Link Stream "+i['title']+" : "+str(link))
+            bot.send_message(message.chat.id, "Link Stream "+i['title']+" : "+str(link),parse_mode="Markdown")
 
 @bot.message_handler(commands=['start', 'hello','help'])
 def send_welcome(message):
@@ -216,7 +216,8 @@ Ketik /search "judul film" (tanpa tanda kutip) untuk mencari film, contoh /searc
 @bot.callback_query_handler(func=lambda call: True)
 def callback_query(call):
     if call.data.startswith("/detail"):
-        # print(call.text)
+        print(call.message)
+        print(call.message.text)
         try:
             link = call.data.replace("/detail ","")
             # history = getHistoryById(id)
