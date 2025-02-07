@@ -241,14 +241,16 @@ def callback_query(call):
     if call.data.startswith("/detail"):
         link = call.data.replace("/detail ","")
         print(link)
-        # loop call.message.entities when type is text_link
-        links = []
-        for entity in call.message.entities:
-            if entity.type == "text_link":
-                links.append(entity.url)
-        if link.startswith("[btn:"):
-            index = int(link.replace("[btn:","").replace("]",""))
-            link = links[index]
+
+        if call.message.entities is not None:
+            # loop call.message.entities when type is text_link
+            links = []
+            for entity in call.message.entities:
+                if entity.type == "text_link":
+                    links.append(entity.url)
+            if link.startswith("[btn:"):
+                index = int(link.replace("[btn:","").replace("]",""))
+                link = links[index]
         try:
             
             # history = getHistoryById(id)
